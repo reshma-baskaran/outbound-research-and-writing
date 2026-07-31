@@ -1,0 +1,4 @@
+interface:
+  display_name: "Outbound Research and Writing"
+  short_description: "Research accounts and write evidence-led outbound sequences"
+  default_prompt: "Use $outbound-research-and-writing to research these accounts and draft a grounded outbound sequence."
