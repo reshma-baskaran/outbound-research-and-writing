@@ -1,6 +1,6 @@
 # Outbound Research & Writing
 
-![Outbound Research and Writing cover](assets/cover.png)
+![Outbound Research and Writing cover](assets/cover.svg)
 
 A source-backed operating system for researching accounts, deciding what is safe to say, and writing six-touch outbound sequences that do not repeat themselves.
 
@@ -59,4 +59,3 @@ The workflow is in active use as the writing and QA layer for account-personaliz
 ## Author
 
 Built by **Reshma Baskaran**, a GTM and growth marketer building practical research, outbound, and knowledge systems.
-
