@@ -1,0 +1,15 @@
+{
+  "workspace_path": "~/Documents/outbound-research-and-writing-workspace",
+  "input_format": "markdown",
+  "sequence_length": 6,
+  "send_mode": "draft_only",
+  "privacy": {
+    "keep_recipient_data_out_of_public_repo": true,
+    "keep_credentials_out_of_workspace": true,
+    "redact_before_sharing": true
+  },
+  "review": {
+    "require_source_url_for_account_claims": true,
+    "require_human_approval_before_send": true
+  }
+}

@@ -1,0 +1,7 @@
+# Campaign inputs and outputs are local working data.
+research/
+sequences/
+reviews/
+outputs/
+private/
+*.local.json

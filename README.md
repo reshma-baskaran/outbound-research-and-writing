@@ -2,7 +2,12 @@
 
 ![Outbound Research and Writing cover](assets/cover.svg)
 
-A source-backed operating system for researching accounts, deciding what is safe to say, and writing six-touch outbound sequences that do not repeat themselves.
+A source-backed, draft-only starter kit for researching accounts, deciding what
+is safe to say, and writing six-touch outbound sequences that do not repeat
+themselves.
+
+It packages a real operating method for local use. It is not a campaign sender,
+enrichment product, or library of invented outreach examples.
 
 ## The problem
 
@@ -12,12 +17,25 @@ This repository captures the method I use to move from account research to revie
 
 ## What is included
 
+- A [quickstart](QUICKSTART.md), local configuration example, and workspace initializer.
 - A reusable Codex skill in [`skill/outbound-research-and-writing`](skill/outbound-research-and-writing).
 - An account-use-case research schema.
 - A six-touch message architecture.
 - Explicit research and launch boundaries.
 - A deterministic sequence-structure validator.
+- Blank research-map, sequence, and review-checklist templates.
 - Field notes from dormant-lead, time-sensitive, and account-personalized campaign work.
+
+## What a fork gives you
+
+After setup, a fork gives you a local workspace for research maps, draft
+sequences, reviews, and outputs. Add your own permitted account inputs and
+source URLs, use the skill to draft, and validate the sequence before human
+review.
+
+It does not include recipient records, private campaign copy, sending-platform
+exports, enrichment credentials, or launch state. A successful validation is a
+structural gate, not permission to send.
 
 ## How it works
 
@@ -33,6 +51,8 @@ account list
 ```
 
 ## Use the skill
+
+See [QUICKSTART.md](QUICKSTART.md) for the full setup and workspace initializer.
 
 Copy the skill folder into your Codex skills directory, or point Codex at the local folder and ask:
 
@@ -54,7 +74,10 @@ It does not publish private recipient data, sending-platform exports, confidenti
 
 ## Current status
 
-The workflow is in active use as the writing and QA layer for account-personalized outbound. Uploading, lead verification, enrichment spend, and campaign launch remain explicit human decisions.
+The workflow is in active use as the writing and QA layer for account-personalized
+outbound and is now packaged as a local starter kit. Uploading, lead
+verification, enrichment spend, and campaign launch remain explicit human
+decisions.
 
 ## Author
 

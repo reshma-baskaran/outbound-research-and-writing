@@ -1,11 +1,26 @@
 ---
 name: outbound-research-and-writing
-description: Research accounts, map evidence to a buyer's operating problem, write or review account-personalized outbound email sequences, and run pre-launch QA. Use for cold outbound, ABM sequences, dormant-lead reactivation, time-sensitive outreach, post-event follow-up, or any campaign where claims must remain source-backed and the sequence must avoid repetition.
+description: Initialize a local draft-only workspace, research accounts, map evidence to a buyer's operating problem, write or review account-personalized outbound email sequences, and run pre-launch QA. Use for cold outbound, ABM sequences, dormant-lead reactivation, time-sensitive outreach, post-event follow-up, or any campaign where claims must remain source-backed and the sequence must avoid repetition.
 ---
 
 # Outbound Research and Writing
 
 Write like an operator who understands the buyer's day. Make every account claim traceable.
+
+## Start a new workspace
+
+For a new user or local installation:
+
+1. Copy `outbound-research-and-writing.config.example.json` to a local
+   `outbound-research-and-writing.config.json` and set `workspace_path` outside
+   the public repository.
+2. Run `python3 scripts/init_workspace.py --config outbound-research-and-writing.config.json`.
+3. Complete the copied `templates/research-map.md` from permitted sources.
+4. Draft into a local sequence file and run the validator before review.
+
+The initializer creates missing files but does not overwrite existing workspace
+files unless `--overwrite` is explicitly supplied. Do not add fictional
+campaigns, recipients, or results to make the workflow look complete.
 
 ## Workflow
 
@@ -46,4 +61,3 @@ Write like an operator who understands the buyer's day. Make every account claim
 - If the evidence is insufficient, return the missing research fields instead of completing the sequence.
 
 Use [references/quality-gate.md](references/quality-gate.md) before delivery.
-

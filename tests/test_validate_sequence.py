@@ -1,5 +1,6 @@
 import importlib.util
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
 
@@ -8,6 +9,13 @@ spec = importlib.util.spec_from_file_location("validate_sequence", SCRIPT)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader
 spec.loader.exec_module(module)
+
+
+INIT_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "init_workspace.py"
+init_spec = importlib.util.spec_from_file_location("init_workspace", INIT_SCRIPT)
+init_module = importlib.util.module_from_spec(init_spec)
+assert init_spec.loader
+init_spec.loader.exec_module(init_module)
 
 
 class ValidationTests(unittest.TestCase):
@@ -30,7 +38,15 @@ class ValidationTests(unittest.TestCase):
         errors = module.validate(payload)
         self.assertTrue(any("banned research narration" in error for error in errors))
 
+    def test_workspace_initializer_creates_blank_templates(self):
+        with TemporaryDirectory() as directory:
+            workspace = Path(directory) / "workspace"
+            created, skipped = init_module.install_workspace(workspace)
+            self.assertGreater(len(created), 0)
+            self.assertEqual([], skipped)
+            self.assertTrue((workspace / "templates/research-map.md").exists())
+            self.assertTrue((workspace / "templates/sequence.json").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
-
