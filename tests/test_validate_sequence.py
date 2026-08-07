@@ -46,7 +46,7 @@ class ValidationTests(unittest.TestCase):
             emails.append({
                 "role": role,
                 "subject": "A specific operating question" if index == 1 else "",
-                "body": f"Distinct grounded message for touch {index} with a small next step.",
+                "body": f"Hi [first name],\n\nDistinct grounded message for touch {index} with a small next step.",
                 "claim_ids": ["close-001"] if index == 1 else [],
                 "cta": "Worth comparing notes?",
                 "signoff": "Alex",
@@ -102,13 +102,26 @@ class ValidationTests(unittest.TestCase):
 
     def test_rejects_blocked_placeholders(self):
         payload = self.valid_payload()
-        payload["emails"][0]["body"] = "[BLOCKED: offer missing]"
+        payload["emails"][0]["body"] = "Hi [first name],\n\n[BLOCKED: offer missing]"
         self.assertTrue(any("placeholder" in error for error in module.validate(payload)))
+
+    def test_requires_first_name_greeting_but_allows_its_token(self):
+        payload = self.valid_payload()
+        self.assertEqual([], module.validate(payload))
+        payload["emails"][0]["body"] = "A grounded message without a greeting."
+        errors = module.validate(payload)
+        self.assertTrue(any("must start" in error for error in errors))
+
+    def test_rejects_any_other_unresolved_recipient_placeholder(self):
+        payload = self.valid_payload()
+        payload["emails"][0]["body"] = "Hi [first name],\n\nRelevant idea for [company name]."
+        errors = module.validate(payload)
+        self.assertTrue(any("placeholder" in error for error in errors))
 
     def test_rejects_duplicate_bodies(self):
         payload = self.valid_payload()
         for email in payload["emails"]:
-            email["body"] = "Close has doubled revenue."
+            email["body"] = "Hi [first name],\n\nClose has doubled revenue."
         self.assertIn("Sequence contains duplicate email bodies.", module.validate(payload))
 
     def test_rejects_bad_source_and_unknown_claim(self):
@@ -148,7 +161,7 @@ class ValidationTests(unittest.TestCase):
 
     def test_rejects_research_narration(self):
         payload = self.valid_payload()
-        payload["emails"][0]["body"] = "I found this in your public materials."
+        payload["emails"][0]["body"] = "Hi [first name],\n\nI found this in your public materials."
         errors = module.validate(payload)
         self.assertTrue(any("banned research narration" in error for error in errors))
 

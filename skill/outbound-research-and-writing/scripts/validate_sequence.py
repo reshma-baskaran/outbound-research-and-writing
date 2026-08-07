@@ -18,6 +18,7 @@ BANNED = (
     "i thought this may be relevant",
 )
 PLACEHOLDER_RE = re.compile(r"\b(blocked|todo|tbd|placeholder|insert|lorem ipsum)\b|\[[^]]+\]", re.I)
+GREETING = "Hi [first name],"
 TOUCH_ROLES = (
     "pressure_and_consequence",
     "buyer_seat_expansion",
@@ -121,7 +122,10 @@ def validate(payload: dict, *, base_dir: Path | None = None) -> list[str]:
             errors.append(f"Email {index} role must be {TOUCH_ROLES[index - 1]}.")
         if not body:
             errors.append(f"Email {index} has no body.")
-        if PLACEHOLDER_RE.search(body):
+        if body and not body.casefold().startswith(GREETING.casefold()):
+            errors.append(f"Email {index} must start with {GREETING!r}.")
+        body_without_greeting_token = re.sub(r"\[first name\]", "recipient", body, flags=re.I)
+        if PLACEHOLDER_RE.search(body_without_greeting_token):
             errors.append(f"Email {index} contains unresolved placeholder or blocked content.")
         if index == 1 and not subject:
             errors.append("Email 1 must have a subject.")
@@ -152,7 +156,8 @@ def validate(payload: dict, *, base_dir: Path | None = None) -> list[str]:
             errors.append(f"Email {index} has no signoff.")
         elif isinstance(campaign, dict):
             sender = str(campaign.get("sender_identity", "")).strip()
-            if sender and sender.casefold() not in str(email.get("signoff", "")).casefold():
+            signoff = str(email.get("signoff", "")).strip()
+            if sender and signoff.casefold() != sender.casefold():
                 errors.append(f"Email {index} signoff does not match sender_identity.")
 
     if len(normalized_bodies) != len(set(normalized_bodies)):

@@ -83,6 +83,10 @@ distinct touch roles. Only the first email may have a subject. Passing means
 ready for human review; it never means verified recipient, permission to send,
 or launch approval.
 
+Every review draft starts with `Hi [first name],`. The signoff is taken from
+the campaign's `sender_identity`, so a fork never defaults to the repository
+author's name.
+
 ## What this repository does not contain
 
 It does not publish private recipient data, sending-platform exports, confidential campaign copy, or invented portfolio examples. The [field notes](docs/field-notes.md) explain what changed in the operating method across real campaign types without presenting private work as public evidence.

@@ -1,5 +1,12 @@
 # Six-touch sequence design
 
+Every email begins with `Hi [first name],`. This is the only permitted
+unresolved recipient token in a review draft. The delivery system replaces it
+with the verified recipient's first name before sending.
+
+Every email's `signoff` must equal the campaign's `sender_identity`. Never use
+the repository author's name as a default sender.
+
 ## Email 1 — pressure and consequence
 
 Name a concrete account or role-specific pressure, why it matters, one plain offer sentence, and a small CTA.
@@ -25,4 +32,3 @@ Propose one repeatable queue or workflow as the starting point. Connect it to lo
 State the condition under which the problem is probably not urgent and the condition under which a bounded evaluation would be useful. Close respectfully.
 
 Only Email 1 receives a subject. The other messages stay in the same thread.
-

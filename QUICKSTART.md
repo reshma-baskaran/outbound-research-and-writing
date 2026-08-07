@@ -74,6 +74,10 @@ touch roles, CTAs, and signoffs. It rejects placeholders, duplicate bodies,
 unknown claim IDs, research narration, and long bodies. Success means ready
 for human review only; it does not verify recipient data or authorize sending.
 
+The one allowed review-stage recipient token is `Hi [first name],` at the
+start of every email. Each `signoff` must exactly match the campaign's
+`sender_identity`; the repository never supplies Reshma's name as a default.
+
 ## 6. Use the skill
 
 Copy `skill/outbound-research-and-writing` into your Codex skills directory, or

@@ -56,13 +56,16 @@ campaigns, recipients, or results to make the workflow look complete.
 
 ## Writing rules
 
+- Begin every email with `Hi [first name],`. Preserve this token in a review
+  draft until the verified recipient's first name is available.
 - Open with a concrete operating pressure, not an AI category statement.
 - State the consequence in the buyer's language.
 - Give each touch a different job.
 - Put a subject on Email 1 only; follow-ups remain in the same thread.
 - Keep the CTA small and easy to answer.
 - Tie governance, auditability, and handoff to a specific workflow.
-- Match the signoff to the actual sender.
+- Set every `signoff` from the campaign's `sender_identity`. Never default to
+  Reshma Baskaran or any repository author.
 
 ## Boundaries
 
