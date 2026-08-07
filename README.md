@@ -21,8 +21,12 @@ This repository captures the method I use to move from account research to revie
 - A reusable Codex skill in [`skill/outbound-research-and-writing`](skill/outbound-research-and-writing).
 - An account-use-case research schema.
 - A six-touch message architecture.
+- A fail-closed campaign-input and readiness check.
+- A resumable case command that creates no sequence before input and research
+  gates pass.
 - Explicit research and launch boundaries.
-- A deterministic sequence-structure validator.
+- A deterministic validator for structure, required inputs, claim lineage,
+  placeholders, duplication, touch roles, CTA, signoff, and review readiness.
 - Blank research-map, sequence, and review-checklist templates.
 - Field notes from dormant-lead, time-sensitive, and account-personalized campaign work.
 
@@ -60,13 +64,24 @@ Copy the skill folder into your Codex skills directory, or point Codex at the lo
 Use $outbound-research-and-writing to research these accounts and draft a grounded outbound sequence.
 ```
 
-Validate a sequence:
+Check whether the campaign has enough input to begin research:
+
+```bash
+python skill/outbound-research-and-writing/scripts/check_readiness.py \
+  /path/to/campaign-input.json
+```
+
+Validate a sequence only after the input and research gates pass:
 
 ```bash
 python skill/outbound-research-and-writing/scripts/validate_sequence.py path/to/sequence.json
 ```
 
-The JSON document must contain an `emails` array with exactly six objects and a `source_urls` array. Only the first email may have a subject.
+The JSON document must embed the campaign inputs, reference an existing
+research map, include structured source-backed claims, and contain exactly six
+distinct touch roles. Only the first email may have a subject. Passing means
+ready for human review; it never means verified recipient, permission to send,
+or launch approval.
 
 ## What this repository does not contain
 

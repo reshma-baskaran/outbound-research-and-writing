@@ -4,28 +4,142 @@ from tempfile import TemporaryDirectory
 import unittest
 
 
-SCRIPT = Path(__file__).resolve().parents[1] / "skill" / "outbound-research-and-writing" / "scripts" / "validate_sequence.py"
-spec = importlib.util.spec_from_file_location("validate_sequence", SCRIPT)
-module = importlib.util.module_from_spec(spec)
-assert spec.loader
-spec.loader.exec_module(module)
+ROOT = Path(__file__).resolve().parents[1]
 
 
-INIT_SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "init_workspace.py"
-init_spec = importlib.util.spec_from_file_location("init_workspace", INIT_SCRIPT)
-init_module = importlib.util.module_from_spec(init_spec)
-assert init_spec.loader
-init_spec.loader.exec_module(init_module)
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader
+    spec.loader.exec_module(module)
+    return module
+
+
+module = load("validate_sequence", ROOT / "skill/outbound-research-and-writing/scripts/validate_sequence.py")
+readiness_module = load("check_readiness", ROOT / "skill/outbound-research-and-writing/scripts/check_readiness.py")
+init_module = load("init_workspace", ROOT / "scripts/init_workspace.py")
+case_module = load("run_case", ROOT / "scripts/run_case.py")
 
 
 class ValidationTests(unittest.TestCase):
     def valid_payload(self):
-        emails = [{"subject": "A specific operating question", "body": "A grounded pressure and a small next step."}]
-        emails.extend({"subject": "", "body": f"Distinct follow-up role {number}."} for number in range(2, 7))
-        return {"emails": emails, "source_urls": ["https://example.com/source"]}
+        campaign = {
+            "sender_identity": "Alex",
+            "sender_company": "Example",
+            "offer": "Documented workflow review",
+            "target_account": "Close",
+            "target_persona": "VP Marketing",
+            "campaign_objective": "Validate one operating problem",
+            "cta": "Open to comparing notes?",
+            "proof_points": ["Approved proof point"],
+        }
+        claims = [{
+            "id": "close-001",
+            "text": "Close publishes a CRM product page.",
+            "source_url": "https://close.com/crm",
+            "accessed_at": "2026-08-07",
+            "status": "confirmed",
+            "scope": "Company-published claim",
+        }]
+        emails = []
+        for index, role in enumerate(module.TOUCH_ROLES, 1):
+            emails.append({
+                "role": role,
+                "subject": "A specific operating question" if index == 1 else "",
+                "body": f"Distinct grounded message for touch {index} with a small next step.",
+                "claim_ids": ["close-001"] if index == 1 else [],
+                "cta": "Worth comparing notes?",
+                "signoff": "Alex",
+            })
+        return {
+            "readiness_status": "ready_for_review",
+            "campaign": campaign,
+            "research_map": "research-map.md",
+            "claims": claims,
+            "emails": emails,
+        }
 
-    def test_valid_structure(self):
+    def test_valid_review_ready_sequence(self):
         self.assertEqual([], module.validate(self.valid_payload()))
+
+    def test_sparse_close_input_returns_needs_input(self):
+        result = readiness_module.readiness({"target_account": "Close", "target_domain": "close.com"})
+        self.assertEqual("needs_input", result["status"])
+        self.assertIn("offer", result["missing"])
+        self.assertIn("target_persona", result["missing"])
+        self.assertFalse(result["sequence_created"])
+
+    def test_run_case_does_not_create_sequence_or_research_map_when_input_is_missing(self):
+        with TemporaryDirectory() as directory:
+            result = case_module.run_case(
+                {"target_account": "Close", "target_domain": "close.com"},
+                Path(directory),
+            )
+            case_dir = Path(result["case_dir"])
+            self.assertEqual("needs_input", result["status"])
+            self.assertTrue((case_dir / "readiness.json").exists())
+            self.assertFalse((case_dir / "research-map.md").exists())
+            self.assertFalse((case_dir / "sequence.json").exists())
+
+    def test_run_case_creates_only_research_scaffold_when_input_is_complete(self):
+        campaign = {
+            "sender_identity": "Alex",
+            "sender_company": "Example",
+            "offer": "Documented workflow review",
+            "target_account": "Close",
+            "target_domain": "close.com",
+            "target_persona": "VP Marketing",
+            "campaign_objective": "Validate one operating problem",
+            "cta": "Open to comparing notes?",
+            "proof_points": ["Approved proof point"],
+        }
+        with TemporaryDirectory() as directory:
+            result = case_module.run_case(campaign, Path(directory))
+            case_dir = Path(result["case_dir"])
+            self.assertEqual("needs_research", result["status"])
+            self.assertTrue((case_dir / "research-map.md").exists())
+            self.assertFalse((case_dir / "sequence.json").exists())
+
+    def test_rejects_blocked_placeholders(self):
+        payload = self.valid_payload()
+        payload["emails"][0]["body"] = "[BLOCKED: offer missing]"
+        self.assertTrue(any("placeholder" in error for error in module.validate(payload)))
+
+    def test_rejects_duplicate_bodies(self):
+        payload = self.valid_payload()
+        for email in payload["emails"]:
+            email["body"] = "Close has doubled revenue."
+        self.assertIn("Sequence contains duplicate email bodies.", module.validate(payload))
+
+    def test_rejects_bad_source_and_unknown_claim(self):
+        payload = self.valid_payload()
+        payload["claims"][0]["source_url"] = "http://x"
+        payload["emails"][0]["claim_ids"] = ["missing"]
+        errors = module.validate(payload)
+        self.assertTrue(any("valid HTTPS" in error for error in errors))
+        self.assertTrue(any("unknown claim ids" in error for error in errors))
+
+    def test_rejects_inferred_claims_in_recipient_copy_and_wrong_signoff(self):
+        payload = self.valid_payload()
+        payload["claims"][0]["status"] = "inferred"
+        payload["emails"][0]["signoff"] = "Someone else"
+        errors = module.validate(payload)
+        self.assertTrue(any("cannot state inferred claims" in error for error in errors))
+        self.assertTrue(any("signoff does not match" in error for error in errors))
+
+    def test_rejects_missing_campaign_fields_and_wrong_status(self):
+        payload = self.valid_payload()
+        payload["campaign"]["offer"] = ""
+        payload["readiness_status"] = "needs_input"
+        errors = module.validate(payload)
+        self.assertTrue(any("offer" in error for error in errors))
+        self.assertTrue(any("readiness_status" in error for error in errors))
+
+    def test_checks_research_map_on_cli_path(self):
+        payload = self.valid_payload()
+        with TemporaryDirectory() as directory:
+            errors = module.validate(payload, base_dir=Path(directory))
+        self.assertTrue(any("research_map does not exist" in error for error in errors))
 
     def test_only_first_email_has_subject(self):
         payload = self.valid_payload()
@@ -38,7 +152,7 @@ class ValidationTests(unittest.TestCase):
         errors = module.validate(payload)
         self.assertTrue(any("banned research narration" in error for error in errors))
 
-    def test_workspace_initializer_creates_blank_templates(self):
+    def test_workspace_initializer_creates_new_templates(self):
         with TemporaryDirectory() as directory:
             workspace = Path(directory) / "workspace"
             created, skipped = init_module.install_workspace(workspace)
@@ -46,6 +160,7 @@ class ValidationTests(unittest.TestCase):
             self.assertEqual([], skipped)
             self.assertTrue((workspace / "templates/research-map.md").exists())
             self.assertTrue((workspace / "templates/sequence.json").exists())
+            self.assertTrue((workspace / "templates/campaign-input.json").exists())
 
 
 if __name__ == "__main__":

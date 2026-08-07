@@ -1,6 +1,16 @@
 {
-  "account": "",
+  "readiness_status": "needs_input",
+  "campaign": {
+    "sender_identity": "",
+    "sender_company": "",
+    "offer": "",
+    "target_account": "",
+    "target_persona": "",
+    "campaign_objective": "",
+    "cta": "",
+    "proof_points": []
+  },
   "research_map": "",
-  "source_urls": [],
+  "claims": [],
   "emails": []
 }
