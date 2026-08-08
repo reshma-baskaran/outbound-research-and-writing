@@ -9,6 +9,23 @@ themselves.
 It packages a real operating method for local use. It is not a campaign sender,
 enrichment product, or library of invented outreach examples.
 
+## The operating path
+
+| State | What the system does |
+|---|---|
+| `needs_input` | Lists only the missing campaign fields and creates no sequence |
+| `ready_for_research` | Confirms the brief is complete |
+| `needs_research` | Creates an account research map, never recipient copy |
+| `ready_for_review` | Validates six distinct touches, claim lineage, greeting, CTA and sender-derived signoff |
+
+```text
+campaign brief → research map → sourced claims → six touch roles → human review
+```
+
+The workflow is intentionally draft-only. A passing validator means the copy is
+structurally reviewable; it does not verify a recipient, approve a claim or
+authorize sending.
+
 ## The problem
 
 Personalization often fails in one of two ways: it is generic enough to fit every account, or it turns a weak public clue into an unsupported claim. Longer sequences compound the problem by repeating the same observation six times.
@@ -23,7 +40,7 @@ This repository captures the method I use to move from account research to revie
 - A six-touch message architecture.
 - A fail-closed campaign-input and readiness check.
 - A resumable case command that creates no sequence before input and research
-  gates pass.
+  gates pass and preserves completed research on rerun.
 - Explicit research and launch boundaries.
 - A deterministic validator for structure, required inputs, claim lineage,
   placeholders, duplication, touch roles, CTA, signoff, and review readiness.

@@ -100,6 +100,58 @@ class ValidationTests(unittest.TestCase):
             self.assertTrue((case_dir / "research-map.md").exists())
             self.assertFalse((case_dir / "sequence.json").exists())
 
+    def test_run_case_preserves_completed_research_and_readiness_on_rerun(self):
+        campaign = {
+            "sender_identity": "Alex",
+            "sender_company": "Example",
+            "offer": "Documented workflow review",
+            "target_account": "Close",
+            "target_domain": "close.com",
+            "target_persona": "VP Marketing",
+            "campaign_objective": "Validate one operating problem",
+            "cta": "Open to comparing notes?",
+            "proof_points": ["Approved proof point"],
+        }
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = case_module.run_case(campaign, root)
+            case_dir = Path(first["case_dir"])
+            research = case_dir / "research-map.md"
+            readiness = case_dir / "readiness.json"
+            research.write_text("completed research\n", encoding="utf-8")
+            readiness.write_text('{"status":"ready_for_review"}\n', encoding="utf-8")
+
+            second = case_module.run_case(campaign, root)
+
+            self.assertEqual("completed research\n", research.read_text(encoding="utf-8"))
+            self.assertEqual("ready_for_review", second["status"])
+            self.assertTrue(second["existing_case_preserved"])
+            self.assertFalse(second["research_map_created"])
+
+    def test_run_case_overwrite_requires_explicit_flag(self):
+        campaign = {
+            "sender_identity": "Alex",
+            "sender_company": "Example",
+            "offer": "Documented workflow review",
+            "target_account": "Close",
+            "target_domain": "close.com",
+            "target_persona": "VP Marketing",
+            "campaign_objective": "Validate one operating problem",
+            "cta": "Open to comparing notes?",
+            "proof_points": ["Approved proof point"],
+        }
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            first = case_module.run_case(campaign, root)
+            case_dir = Path(first["case_dir"])
+            research = case_dir / "research-map.md"
+            research.write_text("completed research\n", encoding="utf-8")
+
+            replaced = case_module.run_case(campaign, root, overwrite=True)
+
+            self.assertNotEqual("completed research\n", research.read_text(encoding="utf-8"))
+            self.assertTrue(replaced["research_map_created"])
+
     def test_rejects_blocked_placeholders(self):
         payload = self.valid_payload()
         payload["emails"][0]["body"] = "Hi [first name],\n\n[BLOCKED: offer missing]"

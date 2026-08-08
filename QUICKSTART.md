@@ -52,6 +52,10 @@ Incomplete input creates only `readiness.json`. Complete input creates a blank
 account-specific research map and advances to `needs_research`; it still does
 not create a sequence.
 
+Running the command again resumes the existing case without replacing its
+research or readiness state. Use `--overwrite` only when you intentionally
+want to discard the existing scaffold and start again.
+
 ## 4. Use the research map
 
 Open the copied `templates/research-map.md` and complete it from sources you

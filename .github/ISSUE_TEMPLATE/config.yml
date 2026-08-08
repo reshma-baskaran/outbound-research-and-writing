@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and workflow ideas
+    url: https://github.com/reshma-baskaran/outbound-research-and-writing/discussions
+    about: Ask a question or share a use case without filing a bug.
