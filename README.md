@@ -49,6 +49,8 @@ This repository captures the method I use to move from account research to revie
   placeholders, duplication, touch roles, CTA, signoff, and review readiness.
 - Blank research-map, sequence, and review-checklist templates.
 - Field notes from dormant-lead, time-sensitive, and account-personalized campaign work.
+- A [real, anonymised event-led insurance outreach walkthrough](docs/cases/event-led-insurance-outreach.md)
+  showing how one campaign thesis changed across seven senior-buyer roles.
 
 ## What a fork gives you
 
@@ -108,6 +110,15 @@ or launch approval.
 Every review draft starts with `Hi [first name],`. The signoff is taken from
 the campaign's `sender_identity`, so a fork never defaults to the repository
 author's name.
+
+## Real campaign walkthrough
+
+The [event-led insurance outreach case](docs/cases/event-led-insurance-outreach.md)
+is derived from a real seven-draft campaign packet. It preserves the research,
+problem-framing, buyer-angle, claim-lineage, and CTA decisions while removing
+all people, companies, URLs, product identity, and private copy. The source
+does not contain verified send or performance data, so the case makes no reply,
+meeting, pipeline, or revenue claim.
 
 ## What this repository does not contain
 
