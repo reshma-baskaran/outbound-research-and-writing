@@ -26,6 +26,9 @@ The workflow is intentionally draft-only. A passing validator means the copy is
 structurally reviewable; it does not verify a recipient, approve a claim or
 authorize sending.
 
+If this research-to-writing method is useful, **star the repository** to keep it
+close and help another outbound operator discover it.
+
 ## The problem
 
 Personalization often fails in one of two ways: it is generic enough to fit every account, or it turns a weak public clue into an unsupported claim. Longer sequences compound the problem by repeating the same observation six times.
@@ -35,7 +38,7 @@ This repository captures the method I use to move from account research to revie
 ## What is included
 
 - A [quickstart](QUICKSTART.md), local configuration example, and workspace initializer.
-- A reusable Codex skill in [`skill/outbound-research-and-writing`](skill/outbound-research-and-writing).
+- A reusable agent skill in [`skill/outbound-research-and-writing`](skill/outbound-research-and-writing).
 - An account-use-case research schema.
 - A six-touch message architecture.
 - A fail-closed campaign-input and readiness check.
@@ -75,10 +78,12 @@ account list
 
 See [QUICKSTART.md](QUICKSTART.md) for the full setup and workspace initializer.
 
-Copy the skill folder into your Codex skills directory, or point Codex at the local folder and ask:
+Copy the skill folder into your agent's supported skills directory, or point
+your coding agent at the local [`SKILL.md`](skill/outbound-research-and-writing/SKILL.md)
+and ask:
 
 ```text
-Use $outbound-research-and-writing to research these accounts and draft a grounded outbound sequence.
+Use the outbound-research-and-writing skill in this repository to research these accounts and draft a grounded outbound sequence.
 ```
 
 Check whether the campaign has enough input to begin research:
